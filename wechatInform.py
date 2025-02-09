@@ -1,4 +1,6 @@
 import time
+import socket
+
 
 from flask import Flask, request
 from winotify import Notification, Notifier, Registry
@@ -65,6 +67,11 @@ def notify(hwnd, msg, wparam, lparam):
         pass
     return True
 
+def get_ip_address():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
+
 wc = win32gui.WNDCLASS()
 wc.hInstance = win32gui.GetModuleHandle(None)
 wc.lpszClassName = "微信消息弹窗插件"
@@ -74,7 +81,8 @@ classAtom = win32gui.RegisterClass(wc)
 hwnd =win32gui.CreateWindow(classAtom,"tst2",win32con.WS_OVERLAPPEDWINDOW,win32con.CW_USEDEFAULT,win32con.CW_USEDEFAULT,win32con.CW_USEDEFAULT,win32con.CW_USEDEFAULT,None,None,None,None)
 notify_id = (hwnd,0,win32gui.NIF_ICON | win32gui.NIF_MESSAGE | win32gui.NIF_TIP,win32con.WM_USER + 20,win32gui.LoadIcon(0, win32con.IDI_APPLICATION),"Windows通知中心")
 win32gui.Shell_NotifyIcon(0,notify_id)
+host = get_ip_address()
 
 # 在指定IP和端口开启HTTP服务
 if __name__ == '__main__':
-    app.run(debug=False,host='192.168.0.113', port=8080)
+    app.run(debug=False,host=host, port=8080)
